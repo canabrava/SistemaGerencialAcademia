@@ -1,0 +1,108 @@
+﻿@using SistemaGerencialAcademia.Models.Cliente;
+@model IEnumerable<ClienteModel>
+
+    <div>
+
+        @foreach (var cliente in Model)
+        {
+            <div class="modal fade" id="informacoesPagamento_@cliente.Id" tabindex="-1" role="form" aria-labelledby="informacoesPagamentoModalLabel" aria-hidden="true">
+                @await Html.PartialAsync("_informacoesPagamentoModal", cliente.Id)
+            </div>
+            @if (cliente.PodeTerPeriodoDeFerias)
+            {
+                <div class="modal fade" id="periodoDeFerias_@cliente.Id" tabindex="-1" role="form" aria-labelledby="periodoFeriasModalLabel" aria-hidden="true">
+                    @await Html.PartialAsync("_periodoDeFeriasModal", cliente.Id)
+                </div>
+            }
+        }
+
+
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Nome</th>
+                    <th scope="col">CPF</th>
+                    <th scope="col">Identidade</th>
+                    <th scope="col">Endereço</th>
+                    <th scope="col" class="text-center">Pagamento</th>
+                    <th scope="col" class="text-center">Ferias</th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+                @foreach (var cliente in Model)
+                {
+                    <tr>
+                        <td>@cliente.Nome</td>
+                        <td class="cpf">@cliente.CPF</td>
+                        <td class="rg">@cliente.Identidade</td>
+                        <td>@cliente.Endereco</td>
+                        <td>
+                            <div class="fa fa-money d-flex justify-content-center" data-toggle="modal" data-target="#informacoesPagamento_@cliente.Id" style="cursor: pointer;" />
+                        </td>
+                        @if (cliente.PodeTerPeriodoDeFerias)
+                        {
+                            <td  id="iconeFerias_@cliente.Id">
+                                <div class="fa fa-plane d-flex justify-content-center" data-toggle="modal" data-target="#periodoDeFerias_@cliente.Id" style="cursor: pointer;" />
+                            </td>
+
+                        }
+                        else
+                        {
+                            <td>
+                                <div />
+                            </td>
+                        }
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+@if (Model.Count() % 10 == 0)
+{
+    <div style="margin: 10px;">
+        <button id="maisButton" type="button" class="btn btn-outline-info btn-sm" >
+        Mais
+        </button>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        $('.cpf').mask('000.000.000-00');
+        $('.rg').mask('00.000.000');
+        $("#loading-div-background").hide();
+    });
+
+    $('#salvarPeriodoDeFeriasButton').on('click', function (event) {
+        var clienteId = document.getElementById('salvarPeriodoDeFeriasButton').getAttribute("clienteid")
+
+        event.preventDefault();
+        SalvarNovoPeriodoDeFeriasId(clienteId)
+    });
+
+    $('#maisButton').on('click', function (event) {
+        event.preventDefault();
+        paginarClientes()
+    });
+
+     function paginarClientes() {
+
+         $.ajax(
+         {
+           type: "GET",
+           url: '@Url.Action("PaginarMaisClientes", "Cliente")',
+           success: function (result) {
+               $("#resultadoPesquisaClientes").html(result)
+           }
+         });
+     }
+
+     function NovoCliente() {
+        $('#myInput').trigger('focus')
+    }
+
+</script>

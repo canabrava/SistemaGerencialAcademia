@@ -1,0 +1,119 @@
+﻿@using SistemaGerencialAcademia.Models.Cliente;
+@model NovoClienteModel
+
+    <div class="modal-dialog  modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cadastrar Cliente</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="LimparInformacoeCliente()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+               <div id="_resultadoCadastroDoCliente">
+               </div>
+
+               <form>
+                   <div class="form-group">
+                       <label>Nome</label>
+                       <input id="novoClienteNome" placeholder="Nome do cliente" class="form-control" />
+                   </div>
+                   <div class="form-group">
+                       <label>CPF</label>
+                       <input id="novoClienteCpf" placeholder="CPF" class="form-control cpf" onkeypress="return eNumero(event)" />
+                   </div>
+                   <div class="form-group">
+                       <label>Identidade</label>
+                       <input id="novoClienteIdentidade" placeholder="Identidade" class="form-control rg" onkeypress="return eNumero(event)" />
+                   </div>
+                   <div class="form-group">
+                       <label>Rua</label>
+                       <input id="novoClienteRua" placeholder="Rua" class="form-control" />
+                   </div>
+                   <div class="form-group">
+                       <label>Bairro</label>
+                       <input id="novoClienteBairro" placeholder="Bairro" class="form-control" />
+                   </div>
+                   <div class="form-group">
+                       <label>Número</label>
+                       <input id="novoClienteNumero" placeholder="Número" class="form-control" onkeypress="return eNumero(event)" />
+                   </div>
+                   <div class="form-group">
+                       <label>Complemento</label>
+                       <input id="novoClienteComplemento" placeholder="Complemento" class="form-control" />
+                   </div>
+                   <input id="salvarNovoClienteButton" type="submit" class="btn btn-primary float-right" style="margin: 25px;" value="Salvar" />
+               </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="LimparInformacoeCliente()">Voltar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+
+        $(document).ready(function () {
+            $('.cpf').mask('000.000.000-00');
+            $('.rg').mask('00.000.000');
+        });
+
+        $('#salvarNovoClienteButton').on('click', function (event) {
+            event.preventDefault();
+            SalvarNovoCliente()
+        });
+
+         function SalvarNovoCliente() {
+
+
+             var nome = document.getElementById('novoClienteNome').value
+             var cpf = document.getElementById('novoClienteCpf').value
+             var identidade = document.getElementById('novoClienteIdentidade').value
+             var rua = document.getElementById('novoClienteRua').value
+             var bairro = document.getElementById('novoClienteBairro').value
+             var numero = document.getElementById('novoClienteNumero').value
+             var complemento = document.getElementById('novoClienteComplemento').value
+
+
+            $.ajax(
+            {
+              type: "POST",
+              url: '@Url.Action("CadastrarCliente", "Cliente")',
+              data: {
+                  Nome: nome,
+                  CPF: cpf,
+                  Identidade: identidade,
+                  Rua: rua,
+                  Bairro: bairro,
+                  Numero: numero,
+                  Complemento: complemento
+              },
+              success: function (result) {
+                  $("#_resultadoCadastroDoCliente").html(result)
+              }
+            });
+        }
+
+        function LimparInformacoeCliente()
+        {
+            $("#_resultadoCadastroDoCliente").html("")
+            document.getElementById('novoClienteNome').value = ""
+            document.getElementById('novoClienteCpf').value = ""
+            document.getElementById('novoClienteIdentidade').value = ""
+            document.getElementById('novoClienteRua').value = ""
+            document.getElementById('novoClienteBairro').value = ""
+            document.getElementById('novoClienteNumero').value = ""
+        }
+
+        function eNumero(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            return true;
+        }
+
+    </script>

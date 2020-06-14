@@ -1,0 +1,26 @@
+﻿@using SistemaGerencialAcademia.Models.Base
+@model ResponseBaseModel
+
+    @if (Model.Sucesso)
+    {
+    <div class="alert alert-info" role="alert">
+        @foreach (var mensagem in Model.Mensagens)
+        {
+            <strong>
+                @mensagem
+            </strong>
+        }
+    </div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+             <strong>Erros na operação!</strong>
+            @foreach(var mensagem in Model.Mensagens)
+            {
+                <div>
+                    * @mensagem
+                </div>
+            }
+        </div>
+    }

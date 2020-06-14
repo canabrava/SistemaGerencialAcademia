@@ -1,0 +1,87 @@
+﻿@using SistemaGerencialAcademia.Models.Cliente;
+@model PesquisarClienteModel
+
+<div class="card">
+    <div class="card-header">
+        Clientes
+    </div>
+
+    <form asp-action="BuscarClientes" asp-controller="Cliente" method="get">
+        <div class="row" style="margin: 10px;">
+            <div class="form-group col">
+                <label asp-for="Nome"></label>
+                <input asp-for="Nome" placeholder="Nome do cliente" class="form-control" />
+            </div>
+            <div class="form-group col">
+                <label asp-for="CPF"></label>
+                <input asp-for="CPF" id="campoCpf" placeholder="CPF" class="form-control" onkeypress="return eNumero(event)"/>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary float-left" data-toggle="modal" data-target="#novoClienteModal" style="margin: 25px;">
+            Novo Cliente
+        </button>
+        <input id="PesquisarButton" type="submit" class="btn btn-primary float-right" style="margin: 25px;" value="Pesquisar" />
+    </form>
+</div>
+
+<div id="loading-div-background" style="display:none">
+    <div id="loading-div" class="ui-corner-all" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #0071eb;">
+        <div id="loadingbar"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>
+    </div>
+</div>
+
+@if (Model.PesquisaRealizada)
+{
+    @if (Model.Clientes.Any())
+    {
+        <div class="card" style="margin-top: 25px;">
+            <div class="card-header">
+                Resultado da Pesquisa
+            </div>
+
+            <div id="resultadoPesquisaClientes">
+                @await Html.PartialAsync("_resultadoPesquisa", Model.Clientes)
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert" style="margin: 25px;">
+            Nenhum cliente encontrado!
+        </div>
+    }
+}
+
+<!-- Modal -->
+<div class="modal fade" id="novoClienteModal" tabindex="-1" role="form" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    @await Html.PartialAsync("_novoClienteModal", new NovoClienteModel())
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('#campoCpf').mask('000.000.000-00');
+    });
+
+    $("#PesquisarButton").click(function () {
+        $("#loading-div-background").show();
+    });
+
+    function eNumero(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
+    }
+
+    function NovoCliente() {
+        $('#myInput').trigger('focus')
+    }
+
+</script>
+
+
+
+

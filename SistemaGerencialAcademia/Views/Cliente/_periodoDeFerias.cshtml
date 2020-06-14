@@ -1,0 +1,101 @@
+﻿@using SistemaGerencialAcademia.Models.PeriodoDeFerias
+@model PeriodoDeFeriasModel
+
+@{
+    ViewData["Title"] = "_periodoDeFerias";
+}
+
+    <div id="resultadoOperacaoPeriodoDeFerias" style="display:none">
+        @await Html.PartialAsync("_resultadoOperacao", Model)
+    </div>
+
+    <h6 class="text-center">Períodos de Férias</h6>
+    
+    <table class="table mx-auto" style="width: 18rem;">
+        <thead class="thead-light">
+            <tr>
+                <th class="text-center" scope="col">Início</th>
+                <th class="text-center" scope="col">Fim</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var periodo in Model.PeriodosDeFeriasAnteriores)
+            {
+            <tr>
+                <td class="data text-center">@periodo.DataInicio</td>
+                <td class="data text-center">@periodo.DataFim</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    
+    <div class="card mx-auto" style="width: 18rem; margin-top: 10px;">
+        <div class="card-header">
+            Plano
+        </div>
+    
+        <div class="mx-auto">
+            <label class="form-check-label radioButton" for="dapicker1">
+                Data Início:
+            </label>
+            <div class="input-group date" data-provide="datepicker">
+                <input id="dapicker1" type="date" class="form-control" style="margin:10px;">
+                <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-th"></span>
+                </div>
+            </div>
+            <label class="form-check-label radioButton" for="dapicker2">
+                Data Fim:
+            </label>
+            <div class="input-group date" data-provide="datepicker">
+                <input id="dapicker2" type="date" class="form-control" style="margin:10px;">
+                <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-th"></span>
+                </div>
+            </div>
+        </div>
+        <button type="button" id="salvarPeriodoDeFeriasButton" clienteId="@Model.ClienteId" class="btn btn-primary float-left btn-sm"
+                style="margin: 25px;">
+            Salvar
+        </button>
+    </div>
+    
+    <script>
+    
+          $(document).ready(function () {
+            $('.data').mask('00/00/0000');
+          });
+
+            $('#salvarPeriodoDeFeriasButton').on('click', function (event) {
+                var clienteId = document.getElementById('salvarPeriodoDeFeriasButton').getAttribute("clienteid")
+
+                event.preventDefault();
+                SalvarNovoPeriodoDeFeriasId(clienteId)
+            });
+
+            function SalvarNovoPeriodoDeFeriasId(id) {
+
+                var dataInicio = document.getElementById('dapicker1').value
+
+                var DataFim = document.getElementById('dapicker2').value
+                  
+
+                $.ajax(
+                {
+                  type: "POST",
+                  url: '@Url.Action("InserirNovoPeriodoDeFerias", "Cliente")',
+                  data: {
+                      ClienteId: id,
+                      DataInicioNovoPeriodo: dataInicio,
+                      DataFimNovoPeriodo: DataFim
+                  },
+                  success: function (result) {
+                      $("#_periodoDeFeriasModal_" + id).html(result)
+                      $("#resultadoOperacaoPeriodoDeFerias").show();
+                  }
+                });
+            }
+    
+    </script>
+
+

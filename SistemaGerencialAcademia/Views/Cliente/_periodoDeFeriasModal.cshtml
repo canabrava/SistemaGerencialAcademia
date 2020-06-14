@@ -1,0 +1,47 @@
+﻿@model Guid
+@{
+    ViewData["Title"] = "_periodoDeFeriasModal";
+}
+
+    <div class="modal-dialog  modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="periodoDeFeriasModalLabel">PeriodoDeFerias</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+    
+                <div id="_periodoDeFeriasModal_@Model">
+    
+                </div>
+    
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    
+        $('#periodoDeFerias_@Model').on('show.bs.modal', function(){
+           BuscarPeriodoDeFerias('@Model')
+        });
+    
+        function BuscarPeriodoDeFerias(id) {
+              $.ajax(
+              {
+                type: "GET",
+                url: '@Url.Action("BuscarInformacoesDePeriodoDeFerias", "Cliente")',
+                data: {
+                    id: id
+                },
+                success: function (result) {
+                    $("#_periodoDeFeriasModal_" + id).html(result)
+                }
+              });
+        }
+    
+    </script>

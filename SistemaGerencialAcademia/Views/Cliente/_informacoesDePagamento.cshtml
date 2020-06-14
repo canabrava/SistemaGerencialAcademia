@@ -1,0 +1,128 @@
+﻿@using SistemaGerencialAcademia.Models.InformacoesPagamento
+@using SistemaGerencialAcademia.CrossCutting.Enum;
+@model InformacoesPagamentoModel
+@{
+    ViewData["Title"] = "_informacoesDePagamento";
+}
+
+    <div id="resultadoOperacaoInformacaoPagamento" style="display:none">
+        @await Html.PartialAsync("_resultadoOperacao", Model)
+    </div>
+
+    <h6 class="text-center">Data do último pagamento</h6>
+    <div class="card mx-auto" style="width: 18rem;  height: 4rem;">
+        <div class="card-body text-center date">
+            @Model.UltimoPagamento.Date
+        </div>
+    </div>
+
+    <h6 class="text-center">Data do próximo pagamento</h6>
+    <div class="card mx-auto" style="width: 18rem; height: 4rem;">
+        <div class="card-body text-center date">
+            @Model.ProximoPagamento.Date
+        </div>
+    </div>
+            
+
+    <div class="card mx-auto" style="width: 18rem; margin-top: 10px;">
+        <div class="card-header">
+            Plano
+        </div>
+
+        <div class="mx-auto">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="planoDePagamento" id="planoDePagamento1" value="@PlanoDePagamento.Mensal" 
+                       checked="@Model.PlanoDePagamento.Equals(PlanoDePagamento.Mensal)">
+                <label class="form-check-label radioButton" for="exampleRadios1">
+                    Mensal
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="planoDePagamento" id="planoDePagamento2" value="@PlanoDePagamento.Anual"
+                       checked="@Model.PlanoDePagamento.Equals(PlanoDePagamento.Anual)">
+                <label class="form-check-label" for="exampleRadios2">
+                    Anual
+                </label>
+            </div>
+        </div>
+         <button type="button" id="mudarPlanoButton" clienteId="@Model.IdCliente" class="btn btn-primary float-left btn-sm" 
+                 style="margin: 25px;" >
+            Salvar
+        </button>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <button type="button" id="salvarNovoPagamentoButton"  class="btn btn-primary btn" clienteId="@Model.IdCliente" 
+                    style="margin: 25px;">
+                Novo Pagamento
+            </button>
+        </div>
+    </div>
+
+    <script>
+
+        $(document).ready(function () {
+            $('.date').mask('00/00/0000');
+        });
+
+        $('#mudarPlanoButton').on('click', function (event) {
+            var clienteId = document.getElementById('mudarPlanoButton').getAttribute("clienteid")
+
+            event.preventDefault();
+            MudarPlanoDePagamento(clienteId)
+        });
+
+        $('#salvarNovoPagamentoButton').on('click', function (event) {
+            var clienteId = document.getElementById('salvarNovoPagamentoButton').getAttribute("clienteid")
+
+            event.preventDefault();
+            SalvarNovoPagamento(clienteId)
+        });
+
+        function MudarPlanoDePagamento(id) {
+
+            var planoDePagamento
+
+            if(document.getElementById('planoDePagamento1').checked)
+                planoDePagamento = document.getElementById('planoDePagamento1').value
+            else
+                planoDePagamento = document.getElementById('planoDePagamento2').value
+
+
+            $.ajax(
+            {
+              type: "PUT",
+              url: '@Url.Action("AlterarPlanoDePagamento", "Cliente")',
+              data: {
+                  id: id,
+                  planoDePagamento: planoDePagamento
+              },
+              success: function (result) {
+                  $("#_informacoesDePagamento_" + id).html(result);
+                  $("#resultadoOperacaoInformacaoPagamento").show();
+
+                  if (planoDePagamento == "Mensal") {
+                      $("#iconeFerias_" + id).hide()
+                  }
+              }
+            });
+        }
+
+        function SalvarNovoPagamento(id) {
+            $.ajax(
+            {
+              type: "POST",
+              url: '@Url.Action("InserirNovoPagamento", "Cliente")',
+              data: {
+                  id: id
+              },
+              success: function (result) {
+                  $("#_informacoesDePagamento_" + id).html(result);
+                  $("#resultadoOperacaoInformacaoPagamento").show();
+              }
+            });
+        }
+
+    </script>
+
